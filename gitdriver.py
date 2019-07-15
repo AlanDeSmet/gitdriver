@@ -22,6 +22,22 @@ def parse_args():
 
     return p.parse_args()
 
+def collect_author_info(rev):
+    """ Give a revision from GoogleDrive.revisions, return Git-style author string
+
+    For example, "Robert Exampleson <rob@example.com>"
+
+    If the author name is unavailable, uses UNKNOWN.  If email is unknown, uses an empty string
+    """
+    lastedit = rev.get('lastModifyingUser', None)
+    if lastedit is not None:
+        author = lastedit.get('displayName', 'UNKNOWN')
+        email  = lastedit.get('emailAddress', '')
+    else:
+        author = 'UNKNOWN'
+        email = ''
+    return author+" <"+email+">"
+
 def main():
     opts = parse_args()
     if not opts.mime_type:
@@ -48,6 +64,8 @@ def main():
 
     # Iterate over the revisions (from oldest to newest).
     for rev in gd.revisions(opts.docid):
+        authorinfo = collect_author_info(rev)
+
         with open('content', 'w') as fd:
             if 'exportLinks' in rev and not opts.raw:
                 # If the file provides an 'exportLinks' dictionary,
@@ -65,7 +83,7 @@ def main():
 
         # Commit changes to repository.
         subprocess.call(['git', 'add', 'content'])
-        subprocess.call(['git', 'commit', '-m',
+        subprocess.call(['git', 'commit', '--author', authorinfo, '-m',
             'revision from %s' % rev['modifiedDate']])
 
 if __name__ == '__main__':
