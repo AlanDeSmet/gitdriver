@@ -83,7 +83,7 @@ def main():
 
         # Commit changes to repository.
         subprocess.call(['git', 'add', 'content'])
-        subprocess.call(['git', 'commit', '--author', authorinfo, '-m',
+        subprocess.call(['git', 'commit', '--author', authorinfo, '--date', rev['modifiedDate'], '-m',
             'revision from %s' % rev['modifiedDate']])
 
 if __name__ == '__main__':
