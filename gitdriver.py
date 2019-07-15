@@ -25,8 +25,8 @@ def parse_args():
 def main():
     opts = parse_args()
     if not opts.mime_type:
-		print "Exactly one mime-type must be given!"
-		exit(1)
+        print "Exactly one mime-type must be given!"
+        exit(1)
     cfg = yaml.load(open(opts.config))
     gd = GoogleDrive(
             client_id=cfg['googledrive']['client id'],
